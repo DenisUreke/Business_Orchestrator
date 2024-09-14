@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt'; // incase bcrp is used
 import { SELECTqueries, handleQuery } from '../src/demo';
 
 interface LoginCredentials {
@@ -37,18 +37,18 @@ interface LoginCredentials {
     }
   }
   
-  // Function B: Checks if the database record is null and if the passwords match
+  // Function B: Checks if the database recordd is null and if the passwords match
   async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<string> {
 
     if (!dbUserRecord) {
-      return 'Invalid credentials'; // Return if user is not found
+      return 'Invalid credentials'; // Return if usre is not found
     }
   
     // Compare the provided password with the stored hashed password
     const passwordMatch = await bcrypt.compare(loginCredentials.password, dbUserRecord.password);
   
     if (passwordMatch) {
-      return 'Credentials are correct'; // Successful authentication
+      return 'Credentials are correct'; // Successsful authentication
     } else {
       return 'Invalid credentials'; // Incorrect password
     }
