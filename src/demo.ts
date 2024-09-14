@@ -8,7 +8,8 @@ import { createConnection } from 'mysql2/promise';
 // Enums for different query types
 export enum SELECTqueries {
   GET_USER = "SELECT firstname, lastname FROM user WHERE id = ?;",
-  GET_ADDRESS = "SELECT street, city, zipcode FROM address WHERE id = ?;"
+  GET_ADDRESS = "SELECT street, city, zipcode FROM address WHERE id = ?;",
+  GET_USER_AND_PASSWORD = 'SELECT username, password FROM users WHERE username = ?'
 }
 
 export enum INSERTqueries {
@@ -139,7 +140,7 @@ export async function executeDeleteQuery(queryType: DELETEqueries, inParameters?
  */
 
 // Function to handle different query types
-export async function handleQuery(queryType?: SELECTqueries | INSERTqueries | UPDATEqueries | DELETEqueries, inParameters?: any[]): Promise<void> {
+export async function handleQuery(queryType?: SELECTqueries | INSERTqueries | UPDATEqueries | DELETEqueries, inParameters?: any[]): Promise<any> {
   if (!queryType) {
     console.warn('No query provided');
     return;
@@ -183,78 +184,78 @@ async function endpoint(){
 
 
 // Function definitions
-function functionA(): void {
+export function functionA(): void {
   console.log("Function A was called");
 }
 
-function functionB(stop: boolean): void {
+export function functionB(stop: boolean): void {
   console.log("Function B was called");
 }
 
-function functionC(): string {
+export function functionC(): string {
   console.log("Function C was called");
   return "Function Three returns a string!";
 }
 
-function functionD(id: number): number {
+export function functionD(id: number): number {
   console.log(`Function D was called \n`);
   return 123;
 }
 
 // Enums for different types of functions
-enum HTTPvoidFunctions {
+export enum HTTPvoidFunctions {
   Function_A = 0
 }
 
-enum HTTPvoidInparameterFunctions {
+export enum HTTPvoidInparameterFunctions {
   Function_B = 100
 }
 
-enum HTTPreturnFunctions {
+export enum HTTPreturnFunctions {
   Function_C = 200
 }
 
-enum HTTPreturnInparameterFunctions {
+export enum HTTPreturnInparameterFunctions {
   Function_D = 300
 }
 
 // Functions that map the enum to a function and returns it
-const voidFunctionMap: Record<HTTPvoidFunctions, () => void> = {
+export const voidFunctionMap: Record<HTTPvoidFunctions, () => void> = {
   [HTTPvoidFunctions.Function_A]: functionA
 };
 
-const voidInparameterFunctionMap: Record<HTTPvoidInparameterFunctions, (param: any) => void> = {
+export const voidInparameterFunctionMap: Record<HTTPvoidInparameterFunctions, (param: any) => void> = {
   [HTTPvoidInparameterFunctions.Function_B]: functionB
 };
 
-const returnFunctionMap: Record<HTTPreturnFunctions, () => any> = {
+export const returnFunctionMap: Record<HTTPreturnFunctions, () => any> = {
   [HTTPreturnFunctions.Function_C]: functionC
 };
 
-const returnInparameterFunctionMap: Record<HTTPreturnInparameterFunctions, (param: any) => any> = {
+export const returnInparameterFunctionMap: Record<HTTPreturnInparameterFunctions, (param: any) => any> = {
   [HTTPreturnInparameterFunctions.Function_D]: functionD
 };
 
 
 // Helper functions to check the type of enum, the switch calls this to see which enum was sent in as a parameter
-function isHTTPVoidFunction(query: any): query is HTTPvoidFunctions {
+export function isHTTPVoidFunction(query: any): query is HTTPvoidFunctions {
   return Object.values(HTTPvoidFunctions).includes(query);
 }
 
-function isHTTPVoidInparameterFunction(query: any): query is HTTPvoidInparameterFunctions{
+export function isHTTPVoidInparameterFunction(query: any): query is HTTPvoidInparameterFunctions{
   return Object.values(HTTPvoidInparameterFunctions).includes(query);
 }
 
-function isHTTPReturnFunction(query: any): query is HTTPreturnFunctions {
+export function isHTTPReturnFunction(query: any): query is HTTPreturnFunctions {
   return Object.values(HTTPreturnFunctions).includes(query);
 }
 
-function isHTTPReturnInparameterFunction(query: any): query is HTTPreturnInparameterFunctions{
+export function isHTTPReturnInparameterFunction(query: any): query is HTTPreturnInparameterFunctions{
   return Object.values(HTTPreturnInparameterFunctions).includes(query);
 }
 
 //Switch
-function handleFunctionCall(
+export function handleFunctionCall(
   functionCall?: HTTPvoidFunctions | HTTPvoidInparameterFunctions | HTTPreturnFunctions | HTTPreturnInparameterFunctions,
   inParameter?: any
 ) {
