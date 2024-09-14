@@ -9,12 +9,13 @@ import { createConnection } from 'mysql2/promise';
 export enum SELECTqueries {
   GET_USER = "SELECT firstname, lastname FROM user WHERE id = ?;",
   GET_ADDRESS = "SELECT street, city, zipcode FROM address WHERE id = ?;",
-  GET_USER_AND_PASSWORD = 'SELECT username, password FROM users WHERE username = ?'
+  GET_USER_AND_PASSWORD = 'SELECT username, password FROM users WHERE username = ?',
+  GET_USER_EMAIL = 'SELECT * FROM users WHERE email = ?'
 }
 
 export enum INSERTqueries {
-  ADD_USER = "INSERT INTO user (firstname, lastname) VALUES (?, ?);",
-  ADD_ADDRESS = "INSERT INTO address (street, city, zipcode) VALUES (?, ?, ?);"
+  ADD_USER = "INSERT INTO users (email, password) VALUES (?, ?)",
+  ADD_ADDRESS = "INSERT INTO address (street, city, zipcode) VALUES (?, ?, ?);",
 }
 
 export enum UPDATEqueries {

@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
+import { createConnection } from 'mysql2/promise';
 import bcrypt from 'bcrypt'; // incase bcrp is used
-import { SELECTqueries, handleQuery } from '../src/demo';
+import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
 
 interface LoginCredentials {
     username: string;
@@ -12,8 +13,18 @@ interface LoginCredentials {
     password: string; // Hashed password from the database
   }
 
+  type answer = {
+    message: string, 
+    logInSuccessful: boolean
+  };
 
-  async function functionA(data: any): Promise<string> {
+  type RegisterResponse = {
+    message: string;
+    registrationSuccessful: boolean;
+  };
+
+
+  async function functionA(data: any): Promise<answer> {
     try {
       // Extract values from the incoming data
       const username = data.username;
@@ -21,7 +32,10 @@ interface LoginCredentials {
   
       // Basic validation to check if both username and password are present
       if (!username || !password) {
-        return 'Username and password are required.';
+        return { 
+        message: 'Username and password are required.',
+        logInSuccessful: false
+      };
       }
 
       // Query the database using the extracted username
@@ -33,23 +47,93 @@ interface LoginCredentials {
       return result;
     } catch (error) {
       console.error('Error in Function A:', error);
-      return 'Internal server error';
+      return {
+        message: 'Internal server error',
+        logInSuccessful: false
+      };
     }
   }
   
   // Function B: Checks if the database recordd is null and if the passwords match
-  async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<string> {
+  async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<answer> {
 
     if (!dbUserRecord) {
-      return 'Invalid credentials'; // Return if usre is not found
+      return {
+        message: 'Username does not exist', 
+        logInSuccessful: false
+      }; // Return if usre is not found
     }
   
     // Compare the provided password with the stored hashed password
     const passwordMatch = await bcrypt.compare(loginCredentials.password, dbUserRecord.password);
   
     if (passwordMatch) {
-      return 'Credentials are correct'; // Successsful authentication
+      return {
+        message: 'Credentials are correct', 
+        logInSuccessful: true}; // Successsful authentication
     } else {
-      return 'Invalid credentials'; // Incorrect password
+      return {
+        message: 'Password is incorrect',
+        logInSuccessful: false
+      }; // Incorrect password
+    }
+  }
+
+  function isValidEmail(email: string): boolean {
+    // Regex for valiadting an email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    
+    // Test the email againsst the regex pattern
+    return emailRegex.test(email);
+  }
+
+  async function registerUser(data: any): Promise<RegisterResponse> {
+    const { email, password } = data;
+  
+    if (!email || !password) {
+      return {
+        message: 'Email and password are required.',
+        registrationSuccessful: false,
+      };
+    }
+  
+    // Validate meail format
+    if (!isValidEmail(email)) {
+      return {
+        message: 'Invalid email format.',
+        registrationSuccessful: false,
+      };
+    }
+  
+    try {
+  
+      // Check if the email already exists
+      const [existingUser] = await handleQuery(SELECTqueries.GET_USER_EMAIL, email);
+  
+      if ((existingUser as any).length > 0) {
+        return {
+          message: 'Email already registered.',
+          registrationSuccessful: false,
+        };
+      }
+  
+      // Encrypt
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+      // Save the new user to the daatbase
+      const payload = [email, hashedPassword];
+      await handleQuery(INSERTqueries.ADD_USER, payload);
+  
+      return {
+        message: 'User registered successfully.',
+        registrationSuccessful: true,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        message: 'An error occurred during registration.',
+        registrationSuccessful: false,
+      };
     }
   }
