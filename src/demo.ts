@@ -1,4 +1,5 @@
 import { createConnection } from 'mysql2/promise';
+import { registerUser } from './Functions/helper';
 
 /**
  * Enum representing different SQL queries linked to a GET request.
@@ -217,7 +218,8 @@ export enum HTTPreturnFunctions {
 }
 
 export enum HTTPreturnInparameterFunctions {
-  Function_D = 300
+  Function_D = 300,
+  REGISTER_USER = 301
 }
 
 // Functions that map the enum to a function and returns it
@@ -234,7 +236,8 @@ export const returnFunctionMap: Record<HTTPreturnFunctions, () => any> = {
 };
 
 export const returnInparameterFunctionMap: Record<HTTPreturnInparameterFunctions, (param: any) => any> = {
-  [HTTPreturnInparameterFunctions.Function_D]: functionD
+  [HTTPreturnInparameterFunctions.Function_D]: functionD,
+  [HTTPreturnInparameterFunctions.REGISTER_USER]: registerUser
 };
 
 

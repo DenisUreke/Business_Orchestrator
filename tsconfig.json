@@ -8,7 +8,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"] // Adjust if needed
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -3,34 +3,36 @@ import { createConnection } from 'mysql2/promise';
 import bcrypt from 'bcrypt'; // incase bcrp is used
 import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
 
-interface LoginCredentials {
+  export interface LoginCredentials {
     username: string;
     password: string;
   }
   
-  interface UserRecord {
+  export interface UserRecord {
     username: string;
     password: string; // Hashed password from the database
   }
 
-  type answer = {
+  export type answer = {
     message: string, 
     logInSuccessful: boolean
   };
 
-  type RegisterResponse = {
+  export type RegisterResponse = {
     message: string;
     registrationSuccessful: boolean;
   };
 
 
-  async function functionA(data: any): Promise<answer> {
+  //Log in function
+
+  export async function functionA(data: any): Promise<answer> {
     try {
       // Extract values from the incoming data
       const username = data.username;
       const password = data.password;
   
-      // Basic validation to check if both username and password are present
+      // Basic validation to check if both username and password are entered
       if (!username || !password) {
         return { 
         message: 'Username and password are required.',
@@ -55,8 +57,9 @@ interface LoginCredentials {
   }
   
   // Function B: Checks if the database recordd is null and if the passwords match
-  async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<answer> {
+  export async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<answer> {
 
+    try{
     if (!dbUserRecord) {
       return {
         message: 'Username does not exist', 
@@ -77,9 +80,18 @@ interface LoginCredentials {
         logInSuccessful: false
       }; // Incorrect password
     }
+    }catch(error){
+      console.error('Error in Function B:', error);
+      return {
+        message: 'Internal server error',
+        logInSuccessful: false
+      };
+    }
   }
 
-  function isValidEmail(email: string): boolean {
+    //Function to check if email has proper form
+
+    export function isValidEmail(email: string): boolean {
     // Regex for valiadting an email
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     
@@ -87,7 +99,10 @@ interface LoginCredentials {
     return emailRegex.test(email);
   }
 
-  async function registerUser(data: any): Promise<RegisterResponse> {
+
+  //Function to register new user
+
+  export async function registerUser(data: any): Promise<RegisterResponse> {
     const { email, password } = data;
   
     if (!email || !password) {
