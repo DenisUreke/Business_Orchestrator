@@ -1,7 +1,6 @@
-import express, { Request, Response } from 'express';
 import { createConnection } from 'mysql2/promise';
 import bcrypt from 'bcrypt'; // incase bcrp is used
-import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
+import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
 
   export interface LoginCredentials {
     username: string;
@@ -13,20 +12,14 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
     password: string; // Hashed password from the database
   }
 
-  export type answer = {
+  export type RequestAnswer = {
     message: string, 
-    logInSuccessful: boolean
+    requestSuccessful: boolean
   };
-
-  export type RegisterResponse = {
-    message: string;
-    registrationSuccessful: boolean;
-  };
-
 
   //Log in function
 
-  export async function functionA(data: any): Promise<answer> {
+  export async function functionA(data: any): Promise<RequestAnswer> {
     try {
       // Extract values from the incoming data
       const username = data.username;
@@ -36,7 +29,7 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
       if (!username || !password) {
         return { 
         message: 'Username and password are required.',
-        logInSuccessful: false
+        requestSuccessful: false
       };
       }
 
@@ -51,19 +44,19 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
       console.error('Error in Function A:', error);
       return {
         message: 'Internal server error',
-        logInSuccessful: false
+        requestSuccessful: false
       };
     }
   }
   
   // Function B: Checks if the database recordd is null and if the passwords match
-  export async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<answer> {
+  export async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<RequestAnswer> {
 
     try{
     if (!dbUserRecord) {
       return {
         message: 'Username does not exist', 
-        logInSuccessful: false
+        requestSuccessful: false
       }; // Return if usre is not found
     }
   
@@ -73,18 +66,18 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
     if (passwordMatch) {
       return {
         message: 'Credentials are correct', 
-        logInSuccessful: true}; // Successsful authentication
+        requestSuccessful: true}; // Successsful authentication
     } else {
       return {
         message: 'Password is incorrect',
-        logInSuccessful: false
+        requestSuccessful: false
       }; // Incorrect password
     }
     }catch(error){
       console.error('Error in Function B:', error);
       return {
         message: 'Internal server error',
-        logInSuccessful: false
+        requestSuccessful: false
       };
     }
   }
@@ -102,13 +95,13 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
 
   //Function to register new user
 
-  export async function registerUser(data: any): Promise<RegisterResponse> {
+  export async function registerUser(data: any): Promise<RequestAnswer> {
     const { email, password } = data;
   
     if (!email || !password) {
       return {
         message: 'Email and password are required.',
-        registrationSuccessful: false,
+        requestSuccessful: false,
       };
     }
   
@@ -116,7 +109,7 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
     if (!isValidEmail(email)) {
       return {
         message: 'Invalid email format.',
-        registrationSuccessful: false,
+        requestSuccessful: false,
       };
     }
   
@@ -128,7 +121,7 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
       if ((existingUser as any).length > 0) {
         return {
           message: 'Email already registered.',
-          registrationSuccessful: false,
+          requestSuccessful: false,
         };
       }
   
@@ -142,13 +135,13 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../src/demo';
   
       return {
         message: 'User registered successfully.',
-        registrationSuccessful: true,
+        requestSuccessful: true,
       };
     } catch (error) {
       console.error(error);
       return {
         message: 'An error occurred during registration.',
-        registrationSuccessful: false,
+        requestSuccessful: false,
       };
     }
   }
