@@ -219,7 +219,7 @@ export enum HTTPreturnInparameterFunctions {
   REGISTER_USER = 301
 }
 
-// Functions that map the enum to a function and returns it
+// Functionss that map the enum to a function and returns it
 export const voidFunctionMap: Record<HTTPvoidFunctions, () => void> = {
   [HTTPvoidFunctions.Function_A]: functionA
 };
@@ -238,7 +238,7 @@ export const returnInparameterFunctionMap: Record<HTTPreturnInparameterFunctions
 };
 
 
-// Helper functions to check the type of enum, the switch calls this to see which enum was sent in as a parameter
+// Helper functions to check the type of enum, the swithc calls this to see which enum was sent in as a parameter
 export function isHTTPVoidFunction(query: any): query is HTTPvoidFunctions {
   return Object.values(HTTPvoidFunctions).includes(query);
 }
@@ -280,7 +280,6 @@ export async function handleFunctionCall(
     
     case isHTTPReturnInparameterFunction(functionCall): {
       const returnFunctionWithInparameter = returnInparameterFunctionMap[functionCall];
-      // Await the result in case it is a Promise
       return await returnFunctionWithInparameter(inParameter);
     }
     
