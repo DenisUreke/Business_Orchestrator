@@ -2,16 +2,19 @@ import { createConnection } from 'mysql2/promise';
 import bcrypt from 'bcrypt'; // incase bcrp is used
 import { SELECTqueries, INSERTqueries, DELETEqueries, handleQuery } from '../demo';
 
+// used for when validating log-in, sent from outside
   export interface LoginCredentials {
     username: string;
     password: string;
   }
   
+  // used for when validating log-in, databse qquery ends up here
   export interface UserRecord {
     username: string;
     password: string; // Hashed password from the database
   }
 
+  // The return made to the caller, bool for success or not and a message : string
   export type RequestAnswer = {
     message: string, 
     requestSuccessful: boolean
