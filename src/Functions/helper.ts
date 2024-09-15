@@ -1,6 +1,6 @@
 import { createConnection } from 'mysql2/promise';
 import bcrypt from 'bcrypt'; // incase bcrp is used
-import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
+import { SELECTqueries, INSERTqueries, DELETEqueries, handleQuery } from '../demo';
 
   export interface LoginCredentials {
     username: string;
@@ -16,6 +16,10 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
     message: string, 
     requestSuccessful: boolean
   };
+
+  //##################################################################
+  //##################################################################
+  //##################################################################
 
   //Log in function
 
@@ -48,6 +52,10 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
       };
     }
   }
+
+  //##################################################################
+  //##################################################################
+  //##################################################################
   
   // Function B: Checks if the database recordd is null and if the passwords match
   export async function functionB(loginCredentials: LoginCredentials, dbUserRecord: UserRecord | null): Promise<RequestAnswer> {
@@ -82,6 +90,10 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
     }
   }
 
+  //##################################################################
+  //##################################################################
+  //##################################################################
+
     //Function to check if email has proper form
 
     export function isValidEmail(email: string): boolean {
@@ -92,6 +104,9 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
     return emailRegex.test(email);
   }
 
+  //##################################################################
+  //##################################################################
+  //##################################################################
 
   //Function to register new user
 
@@ -145,3 +160,52 @@ import { SELECTqueries, INSERTqueries, handleQuery } from '../demo';
       };
     }
   }
+
+  //##################################################################
+  //##################################################################
+  //##################################################################
+
+  // Function to delete a user by username
+export async function deleteUser(data: any): Promise<RequestAnswer> {
+  const { username } = data;
+
+  // validate username was passed
+  if (!username) {
+    return {
+      message: 'Username is required.',
+      requestSuccessful: false,
+    };
+  }
+
+  try {
+    // Retrieve usre ID by username
+    const userIdResult: any = await handleQuery(
+      SELECTqueries.GET_USER_ID_BY_USERNAME,
+      username
+    );
+
+    if (!userIdResult || userIdResult.length === 0) { // bugs is you just check NULL, since TS can return a empty array
+      return {
+        message: 'User does not exist.',
+        requestSuccessful: false,
+      };
+    }
+
+    // Extract user ID from the result
+    const userId = userIdResult[0].id;
+
+    // If user ID exists, delete the user
+    await handleQuery(DELETEqueries.DELETE_USER_BY_ID, userId);
+
+    return {
+      message: 'User deleted successfully.',
+      requestSuccessful: true,
+    };
+  } catch (error) {
+    console.error('Error in deleteUser Function:', error);
+    return {
+      message: 'An error occurred while deleting the user.',
+      requestSuccessful: false,
+    };
+  }
+}

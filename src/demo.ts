@@ -11,7 +11,8 @@ export enum SELECTqueries {
   GET_USER = "SELECT firstname, lastname FROM user WHERE id = ?;",
   GET_ADDRESS = "SELECT street, city, zipcode FROM address WHERE id = ?;",
   GET_USER_AND_PASSWORD = 'SELECT username, password FROM users WHERE username = ?',
-  GET_USER_EMAIL = 'SELECT * FROM users WHERE email = ?'
+  GET_USER_EMAIL = 'SELECT * FROM users WHERE email = ?',
+  GET_USER_ID_BY_USERNAME = 'SELECT id FROM users WHERE username = ?'
 }
 
 export enum INSERTqueries {
@@ -25,7 +26,7 @@ export enum UPDATEqueries {
 }
 
 export enum DELETEqueries {
-  DELETE_USER = "DELETE FROM user WHERE id = ?;",
+  DELETE_USER_BY_ID = 'DELETE FROM users WHERE id = ?',
   DELETE_ADDRESS = "DELETE FROM address WHERE id = ?;"
 }
 
