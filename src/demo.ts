@@ -8,15 +8,15 @@ import { registerUser } from './Functions/helper';
  */
 // Enums for different query types
 export enum SELECTqueries {
-  GET_USER = "SELECT firstname, lastname FROM user WHERE id = ?;",
+  GET_USER = "SELECT email, password FROM user WHERE id = ?;",
   GET_ADDRESS = "SELECT street, city, zipcode FROM address WHERE id = ?;",
-  GET_USER_AND_PASSWORD = 'SELECT username, password FROM users WHERE username = ?',
-  GET_USER_EMAIL = 'SELECT * FROM users WHERE email = ?',
-  GET_USER_ID_BY_USERNAME = 'SELECT id FROM users WHERE username = ?'
+  GET_USER_AND_PASSWORD = 'SELECT email, password FROM user WHERE email = ?',
+  GET_USER_EMAIL = 'SELECT * FROM user WHERE email = ?',
+  GET_USER_ID_BY_USERNAME = 'SELECT id FROM user WHERE email = ?'
 }
 
 export enum INSERTqueries {
-  ADD_USER = "INSERT INTO users (email, password) VALUES (?, ?)",
+  ADD_USER = "INSERT INTO user (email, password) VALUES (?, ?)",
   ADD_ADDRESS = "INSERT INTO address (street, city, zipcode) VALUES (?, ?, ?);",
 }
 
@@ -26,7 +26,7 @@ export enum UPDATEqueries {
 }
 
 export enum DELETEqueries {
-  DELETE_USER_BY_ID = 'DELETE FROM users WHERE id = ?',
+  DELETE_USER_BY_ID = 'DELETE FROM user WHERE id = ?',
   DELETE_ADDRESS = "DELETE FROM address WHERE id = ?;"
 }
 
@@ -151,20 +151,16 @@ export async function handleQuery(queryType?: SELECTqueries | INSERTqueries | UP
 
   switch (true) {
     case isSELECTquery(queryType):
-      await executeSelectQuery(queryType, inParameters);
-      break;
+      return await executeSelectQuery(queryType, inParameters);
 
     case isINSERTquery(queryType):
-      await executeInsertQuery(queryType, inParameters);
-      break;
+      return await executeInsertQuery(queryType, inParameters);
 
     case isUPDATEquery(queryType):
-      await executeUpdateQuery(queryType, inParameters);
-      break;
+      return await executeUpdateQuery(queryType, inParameters);
 
     case isDELETEquery(queryType):
-      await executeDeleteQuery(queryType, inParameters);
-      break;
+      return await executeDeleteQuery(queryType, inParameters);
 
     default:
       console.error('Invalid query type provided');
@@ -260,10 +256,10 @@ export function isHTTPReturnInparameterFunction(query: any): query is HTTPreturn
 }
 
 //Switch
-export function handleFunctionCall(
+export async function handleFunctionCall(
   functionCall?: HTTPvoidFunctions | HTTPvoidInparameterFunctions | HTTPreturnFunctions | HTTPreturnInparameterFunctions,
   inParameter?: any
-) {
+): Promise<any> {
   switch (true) {
     case isHTTPVoidFunction(functionCall): {
       const voidFunction = voidFunctionMap[functionCall];
@@ -284,14 +280,20 @@ export function handleFunctionCall(
     
     case isHTTPReturnInparameterFunction(functionCall): {
       const returnFunctionWithInparameter = returnInparameterFunctionMap[functionCall];
-      return returnFunctionWithInparameter(inParameter);
+      // Await the result in case it is a Promise
+      return await returnFunctionWithInparameter(inParameter);
     }
     
     default:
       console.error('Invalid function type provided');
+      return {
+        message: 'Invalid function type provided',
+        requestSuccessful: false,
+      };
   }
 }
 
+/*
 handleFunctionCall(HTTPvoidFunctions.Function_A)
 
 handleFunctionCall(HTTPvoidInparameterFunctions.Function_B, true)
@@ -299,17 +301,27 @@ handleFunctionCall(HTTPvoidInparameterFunctions.Function_B, true)
 var test = handleFunctionCall(HTTPreturnFunctions.Function_C)
 
 var test2 = handleFunctionCall(HTTPreturnInparameterFunctions.Function_D, 10)
+*/
 
 
-
-endpoint();
-
+//endpoint();
 
 (async () => {
+  const newUser = {
+    email: 'roligadagar@example.com',
+    password: 'password123',
+  };
+
+  // Use `await` to handle the asynchronous call
+  const message = await handleFunctionCall(HTTPreturnInparameterFunctions.REGISTER_USER, newUser);
+  console.log("The message back:", message);
+})();
+
+/*(async () => {
 
     const newUserParameters = ['Captain', 'Rob'];
 
     await handleQuery(INSERTqueries.ADD_USER, newUserParameters);
 
-})();
+})();*/
 
